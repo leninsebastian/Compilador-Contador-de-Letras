@@ -1,0 +1,76 @@
+package analexicosintacticoletras;
+
+import java_cup.runtime.Symbol;
+import java.io.FileReader;
+
+
+parser code {:
+
+
+public void report_error(String message, Object info) {
+       	StringBuffer m = new StringBuffer("Error");
+		if(info instanceof java_cup.runtime.Symbol) {
+			java_cup.runtime.Symbol s=((java_cup.runtime.Symbol)info);
+			if(s.left >= 0) {
+				m.append(" En la linea....."+(s.left));
+				/*Comprueba si el numero de columna es mayoro igual que cero */
+				if (s.right >= 0)
+					m.append(", y en la columna...... "+(s.right));
+			}
+			/* Comprueba si el numero de línea es mayor o igual que cero */
+			 if(s.sym == 0){
+       				 message = "Expresion incompleta, Falta un ; al final";
+    } else if (s.sym == 3){
+        message = "No se encontro el parentesis de cierre";
+    } else if (s.sym == 2){
+    	message = "No se encontro el parentesis de abrir";
+    } else if (s.sym == 5){
+    	message = "No se encontro ninguna cadena para el conteo";
+    } else if (s.sym == 4){
+    	message = "Falta un fin de linea (;)";
+    }
+
+		m.append(" : "+message);
+		System.err.println(m);
+    } 
+}
+   public void contarLetras(String cadena){
+     int aux = 0;
+      aux = aux + cadena.length();
+     System.out.println(aux);
+     }
+
+ public static void main(String[] args){
+        try {
+            AnalizadorSintactico asin = new AnalizadorSintactico(
+                    new AnalizadorLexico( new FileReader(args[0])));
+            Object result = asin.parse().value;
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+    }
+
+public void unrecovered_syntax_error( Symbol s ) throws java.lang.Exception
+{
+
+}
+
+
+:};
+
+terminal String TK_CADENA ; 
+terminal String TK_FINLINEA ; 
+terminal TK_ABRE, TK_CIERRA;
+
+non terminal DOC ; 
+non terminal LISTA, paren ;
+
+DOC ::= DOC LISTA  | LISTA;
+
+LISTA ::= TK_ABRE TK_CADENA:palabra TK_CIERRA TK_FINLINEA {: System.out.println("CADENA en Linea " + palabraleft + " Columna " + palabraright+ " CADENA: " + palabra ); System.out.print("Letras Encontradas: "); parser.contarLetras(palabra); :}
+| error TK_CADENA:palabra TK_CIERRA TK_FINLINEA {:parser.report_error("Falta el parentesis de abre", "#2");:}  ;
+
+
+
+
+         

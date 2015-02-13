@@ -1,0 +1,53 @@
+package analexicosintacticoletras; 
+
+import java_cup.runtime.Symbol;
+
+%% 
+
+%unicode 
+%line 
+%column
+%class AnalizadorLexico
+%public
+%cup
+
+%{
+
+     public void mensaje(String cadena) {
+        for (int x = 0; x < cadena.length(); x++) {
+            System.out.println(cadena.codePointAt(x));
+            
+            if (cadena.codePointAt(x)>=47 && cadena.codePointAt(x)<=57) {
+                System.out.println(" ! Los numeros no son validos !");
+            }
+        }
+     }
+
+
+%}
+
+%%
+
+[a-z]+ { return new Symbol( sym.TK_CADENA , yyline + 1 , yycolumn + 1 , yytext() ) ;  }
+
+(\n|\r|\t|" ")  { }
+
+
+";"  { return new Symbol( sym.TK_FINLINEA , yyline + 1 , yycolumn + 1 , yytext() ) ;  }
+"("  { return new Symbol( sym.TK_ABRE , yyline + 1 , yycolumn + 1 , yytext() ) ;  }
+")"  { return new Symbol( sym.TK_CIERRA , yyline + 1 , yycolumn + 1 , yytext() ) ;  }
+
+.    { System.out.println("Error Lexico:" + " Linea " + (yyline+1) + " Columna " + (yycolumn+1) + "<" + yytext() + ">" ); }
+
+
+
+
+
+
+
+
+
+
+
+
+
